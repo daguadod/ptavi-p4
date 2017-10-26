@@ -6,7 +6,9 @@ Clase (y programa principal) para un servidor de eco en UDP simple
 
 import socketserver
 import sys
-import time
+import json
+
+from datetime import datetime, date, time, timedelta
 
 
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
@@ -14,6 +16,11 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     Echo server class
     """
     dicc = {}
+    lista = []
+    def register2json(self):
+        with open('registered.json', 'w') as outfile_json:
+            json.dump(self.dicc, outfile_json, indent=3)
+        
     def handle(self):
         line = self.rfile.read()
         doc = line.decode('utf-8').split(" ")
@@ -21,13 +28,24 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
         port = self.client_address[1]
         if doc[0] == 'REGISTER':
             user = doc[2]
+            formato = '%Y-%m-%d %H:%M:%S'
+            tiempo = datetime.now()
             expires = doc[4].split('\r\n')[0]
+            expired = tiempo + timedelta(seconds=int(expires))
             address = str(ip) + ":" + str(port)
-            self.dicc[user] = ['address: ' + address, 'Expires: ' + expires]
+            fecha = expired.strftime(formato)
+            self.dicc[user] = {'address' : address, 'Expires' : fecha}
             self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
             if expires == '0':
                 del self.dicc[user]
+            lista = []
+            for user in self.dicc:
+                if self.dicc[user]['Expires'] <= tiempo.strftime(formato):
+                    lista.append(user)
+            for user in lista:
+                del self.dicc[user]
             print(self.dicc)
+            self.register2json()
 if __name__ == "__main__":
     # Listens at localhost ('') port 6001 
     # and calls the EchoHandler class to manage the request
