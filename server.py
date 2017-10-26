@@ -14,16 +14,16 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     dicc = {}
     def handle(self):
-            line = self.rfile.read()
-            doc = line.decode('utf-8').split(" ")[0]
-            ip = self.client_address[0]
-            port = self.client_address[1]
-            if doc == 'REGISTER':
-                user = line.decode('utf-8').split(" ")[1]
-                address = str(ip) + ":" + str(port)
-                self.dicc[user] = ['address: ' + address]
-                print (self.dicc)
-                self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
+        line = self.rfile.read()
+        doc = line.decode('utf-8').split(" ")
+        ip = self.client_address[0]
+        port = self.client_address[1]
+        if doc[0] == 'REGISTER':
+            user = doc[2]
+            address = str(ip) + ":" + str(port)
+            self.dicc[user] = ['address: ' + address]
+            print (self.dicc)
+            self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
 
 if __name__ == "__main__":
     # Listens at localhost ('') port 6001 
