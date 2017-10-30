@@ -10,6 +10,7 @@ import json
 
 from datetime import datetime, date, time, timedelta
 
+
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
@@ -21,9 +22,9 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     def json2registered(self):
         try:
             with open('registered.json', 'r') as outfile_json:
-                json.load(self.dicc, outfile_json)
+                self.dicc = json.load(outfile_json)
         except:
-            self.dicc = {}
+            pass
     """
     Crea el archivo registered.json
     """
