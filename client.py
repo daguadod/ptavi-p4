@@ -17,7 +17,8 @@ try:
     expires = sys.argv[5]
 except IndexError:
     sys.exit('Usage: client.py ip puerto register sip_address expires_val')
-LINE = 'REGISTER sip: ' + Usuario + ' SIP/2.0\r\n\r\n' + 'Expires: ' + expires + '\r\n\r\n'
+LINE = 'REGISTER sip: ' + Usuario + ' SIP/2.0\r\n'
+LINE += 'Expires: ' + expires + '\r\n\r\n'
 # Creamos el socket, lo configuramos y lo atamos a un servidor/puerto
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
     try:
