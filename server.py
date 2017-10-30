@@ -10,24 +10,29 @@ import json
 
 from datetime import datetime, date, time, timedelta
 
-
 class SIPRegisterHandler(socketserver.DatagramRequestHandler):
     """
     Echo server class
     """
     dicc = {}
-
+    """
+    Leer registered.json y si está vacío, no usarlo
+    """
     def json2registered(self):
         try:
             with open('registered.json', 'r') as outfile_json:
                 json.load(self.dicc, outfile_json)
         except:
             self.dicc = {}
-
+    """
+    Crea el archivo registered.json
+    """
     def register2json(self):
         with open('registered.json', 'w') as outfile_json:
             json.dump(self.dicc, outfile_json, indent=3)
-
+    """
+    Procedimiento principal para registrarse
+    """
     def handle(self):
         line = self.rfile.read()
         doc = line.decode('utf-8').split(" ")
@@ -54,6 +59,8 @@ class SIPRegisterHandler(socketserver.DatagramRequestHandler):
             print(self.dicc)
             print()
             self.register2json()
+    """Procedimiento para borrar un usuario cuyo expires haya caducado
+    """
 if __name__ == "__main__":
     # Listens at localhost ('') port 6001
     # and calls the EchoHandler class to manage the request
@@ -62,7 +69,6 @@ if __name__ == "__main__":
     except IndexError:
         sys.exit('Usage: server.py puerto')
     serv = socketserver.UDPServer(('', PORT), SIPRegisterHandler)
-
     print("Lanzando servidor UDP de eco...")
     try:
         serv.serve_forever()
